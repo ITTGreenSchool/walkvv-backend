@@ -1,0 +1,36 @@
+version: '3'
+
+volumes:
+  mariadb:
+    driver: local
+
+networks:
+    db:
+        driver: bridge
+
+services:
+  mariadb:
+    image: mariadb:10.6
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER:  server 
+      MYSQL_PASSWORD: server-farm-1
+      MYSQL_DATABASE: walkvv
+    ports:
+        - "3306:3306"
+    volumes:
+     - mariadb:/var/lib/mysql
+    networks:
+      db:
+              
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - "8000:80"
+    environment:
+      - PMA_HOST=mariadb
+      - PMA_PORT=3306 
+    networks:
+      db:
