@@ -13,6 +13,9 @@ class App {
 
     public static app: express.Application;
 
+    /**
+     * Server runner method
+     */
     public static async run() {
         
         // Initializing server
@@ -28,7 +31,8 @@ class App {
             resave: false,
             saveUninitialized: false
         }));
-        this.app.use
+        this.app.use(passport.initialize());
+        this.app.use(passport.session());
 
         // Express Routes
         this.app.use(router);

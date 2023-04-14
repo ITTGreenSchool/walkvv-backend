@@ -67,6 +67,35 @@ class UserModel {
     }
 
     /**
+     * Retrieves a user from the database
+     * based on his email
+     * @param email The email of the user to retrieve
+     */
+    public static async selectByEmail(email: string): Promise<UserModel> {
+        let connection = await database.getInstance().getConnection();
+        let result = await connection.query(
+            "SELECT * FROM users WHERE email = ?",
+            [email]
+        );
+        connection.release();
+        return result[0];
+    }
+
+    /**
+     * Retrieves a user from his username
+     * @param username The username of the user to retrieve
+     */
+    public static async selectByUsername(username: string): Promise<UserModel> {
+        let connection = await database.getInstance().getConnection();
+        let result = await connection.query(
+            "SELECT * FROM users WHERE username = ?",
+            [username]
+        );
+        connection.release();
+        return result[0];
+    }
+
+    /**
      * Inserts a user into the database
      * @param user The user to insert into the database
      */
@@ -108,3 +137,5 @@ class UserModel {
         connection.release();
     }
 }
+
+export default UserModel;
