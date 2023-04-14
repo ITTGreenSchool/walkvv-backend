@@ -4,11 +4,13 @@ class UserModel {
     private email: string;
     private username: string;
     private password: string;
+    private points: number;
 
-    constructor(email: string, username: string, password: string) {
+    constructor(email: string, username: string, password: string, points: number = 0) {
         this.email = email;
         this.username = username;
         this.password = password;
+        this.points = points;
     }
 
     /******************************************
@@ -27,6 +29,10 @@ class UserModel {
         return this.password;
     }
 
+    public getPoints(): number {
+        return this.points;
+    }
+
     public setEmail(email: string): void {
         this.email = email;
     }
@@ -37,6 +43,10 @@ class UserModel {
 
     public setPassword(password: string): void {    
         this.password = password;
+    }
+
+    public setPoints(points: number): void {
+        this.points = points;
     }
 
     /******************************************
@@ -63,21 +73,24 @@ class UserModel {
     public static async insert(user: UserModel) {
         let connection = await database.getInstance().getConnection();
         await connection.query(
-            "INSERT INTO users (email, username, password) VALUES (?, ?, ?)", 
-            [user.getEmail(), user.getUsername(), user.getPassword()]
+            "INSERT INTO users (email, username, password, points) VALUES (?, ?, ?, ?)",
+            [user.getEmail(), user.getUsername(), user.getPassword(), user.getPoints()]
         );
         connection.release();
     }
 
     /**
      * Updates a user in the database
+     ** NOTE: since fields are shown in the form
+     ** it isn't necessary to check if they are
+     ** undefined or not
      * @param user The user to update in the database
      */
     public static async update(user: UserModel) {
         let connection = await database.getInstance().getConnection();
         await connection.query(
-            "UPDATE users SET email = ?, username = ?, password = ? WHERE email = ?", 
-            [user.getEmail(), user.getUsername(), user.getPassword(), user.getEmail()]
+            "UPDATE users SET username = ?, password = ?, points = ? WHERE email = ?",
+            [user.getUsername(), user.getPassword(), user.getPoints(), user.getEmail()]
         );
         connection.release();
     }
@@ -89,9 +102,9 @@ class UserModel {
     public static async delete(user: UserModel) {
         let connection = await database.getInstance().getConnection();
         await connection.query(
-            "DELETE FROM users WHERE email = ?", 
+            "DELETE FROM users WHERE email = ?",
             [user.getEmail()]
         );
         connection.release();
-    }   
+    }
 }

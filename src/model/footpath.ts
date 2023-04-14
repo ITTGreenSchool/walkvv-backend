@@ -107,6 +107,7 @@ class FootpathModel {
      */
     public static async update(footpath: FootpathModel) {
         let connection = await database.getInstance().getConnection();
+        // Do not insert empty values
         let result = await connection.query(
             "UPDATE footpath SET name = ?, description = ?, difficulty = ?, length = ?, images = ? WHERE id = ?",
             [footpath.getName(), footpath.getDescription(), footpath.getDifficulty(), footpath.getLength(), footpath.getImages(), footpath.getId()]

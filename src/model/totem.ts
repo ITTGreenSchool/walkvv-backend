@@ -7,6 +7,14 @@ class TotemModel {
     private longitude: number;
 
 
+    public constructor(id: number, points: number, latitude: number, longitude: number) {
+        this.id = id;
+        this.points = points;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+
     /******************************************
      * Getters and setters
      ******************************************/
