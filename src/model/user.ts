@@ -1,6 +1,6 @@
 import database from "../libraries/database";
 import logger from "../libraries/logger";
-import UserRequest from '../types/user_request';
+import {UserRequest} from '../types/user_request';
 import argon2 from 'argon2';
 
 class UserModel {
@@ -74,8 +74,8 @@ class UserModel {
         this.username = username;
     }
 
-    public setPassword(password: string) {    
-        this.password = password;
+    public async setPassword(password: string) {    
+        this.password = await argon2.hash(password);
     }
 
     public setPoints(points: number): void {

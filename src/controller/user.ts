@@ -9,6 +9,7 @@ import config from '../config';
 import logger from '../libraries/logger';
 import { SqlError } from 'mariadb';
 import { log } from 'console';
+import { UserUpdateRequest } from '../types/user_request';
 
 class UserController {
 
@@ -152,7 +153,7 @@ class UserController {
         logger.verbose('User update request received');
         passport.authenticate(
             'login',
-            (err, user, info) => {
+            (err, user: UserModel, info) => {
                 if (err) {
                     logger.verbose('Login request encountered an error');
                     return next(err);
@@ -175,10 +176,65 @@ class UserController {
                             logger.verbose('Update request encountered an error');
                             return next(err);
                         }
+                        try { 
+                            // Updating the user in the database
+                            logger.verbose('Updating user in database');
+                            let updated = (req.body as UserUpdateRequest).updated_fields;
 
-                        
+                            if (updated.email) user.setEmail(updated.email);
+                            if (updated.password) await user.setPassword(updated.password);
+                            if (updated.points) user.setPoints(updated.points);
+                            if (updated.username) user.setUsername(updated.username);
 
-                        return res.json({ message: 'user_updated' });
+                            await UserModel.update(user);
+
+                            return res.json({ message: 'user_updated' });
+                        } catch (err) {
+
+                        }
+                    }
+                );
+            }
+        ) (req, res, next);
+    }
+
+    public static async delete_user(req: express.Request, res: express.Response, next: express.NextFunction) {
+        logger.verbose('User delete request received');
+        passport.authenticate(
+            'login',
+            (err, user: UserModel, info) => {
+                if (err) {
+                    logger.verbose('Login request encountered an error');
+                    return next(err);
+                }
+                
+                if (!user) {
+                    logger.verbose('Wrong credentials provided');
+                    return res.status(401).json({
+                        reason: info.message
+                    });
+                }
+
+                logger.verbose('User authenticated');
+                req.login(
+                    user,
+                    { session: false },
+                    async (err) => {
+
+                        if (err) {
+                            logger.verbose('Delete request encountered an error');
+                            return next(err);
+                        }
+                        try { 
+                            // Updating the user in the database
+                            logger.verbose('Deleting user in database');
+                            
+                            await UserModel.delete(user);
+
+                            return res.json({ message: 'user_deleted' });
+                        } catch (err) {
+
+                        }
                     }
                 );
             }
