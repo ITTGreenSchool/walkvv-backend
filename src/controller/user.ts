@@ -1,9 +1,188 @@
 import express from 'express';
-import UserModel from "../model/user";
+import passport from 'passport';
+import argon2 from 'argon2';
+import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+
+import UserModel from '../model/user';
+import config from '../config';
+import logger from '../libraries/logger';
+import { SqlError } from 'mariadb';
+import { log } from 'console';
 
 class UserController {
-    public static async get(req: express.Request, res: express.Response) {
-        UserController
+
+    /**
+     * This request handler is used to authenticate a user given
+     * their email and password. If the user is authenticated,
+     * JWT token is returned for further requests.
+     * 
+     * @api POST /api/v1/auth/login User authentication (login)
+     * @apiParam {String} [email] User email
+     * @apiParam {String} [password] User password
+     * @apiSuccess [200] {String} [token] JWT token
+     * @apiFailure [401] {String} [reason] Error reason
+     */
+    public static async login(req: express.Request, res: express.Response, next: express.NextFunction) {
+        logger.verbose('--------------------------');
+        logger.verbose('Login Request Handler');
+        logger.verbose('--------------------------');
+        logger.verbose('Login request received');
+        passport.authenticate(
+            'login',
+            (err, user, info) => {
+                if (err) {
+                    logger.verbose('Login request encountered an error');
+                    return next(err);
+                }
+                
+                if (!user) {
+                    logger.verbose('Wrong credentials provided');
+                    return res.status(401).json({
+                        reason: info.message
+                    });
+                }
+
+                logger.verbose('User authenticated');
+                req.login(
+                    user,
+                    { session: false },
+                    async (err) => {
+
+                        if (err) {
+                            logger.verbose('Login request encountered an error');
+                            return next(err);
+                        }
+
+                        // Generating JWT token with user fingerprint based on password and email
+                        // Token will be invalidated if user changes password
+                        logger.verbose("Generating JWT token...");
+                        const fpt = crypto
+                        .createHash('sha1')
+                        .update(user.password)
+                        .digest('hex')
+                        const body = { fpt: fpt, email: user.email };
+                        const token = jwt.sign({ user: body }, config.JWT_SECRET);
+                        logger.verbose("JWT token generated");
+
+                        return res.json({ token });
+                    }
+                );
+            }
+        ) (req, res, next);
+    }
+
+    /**
+     * This request handler is used to register a new user.
+     * 
+     * @api POST /api/v1/auth/register User registration
+     * @apiParam {String} [email] User email
+     * @apiParam {String} [password] User password
+     */
+    public static async register(req: express.Request, res: express.Response, next: express.NextFunction) {
+        logger.verbose('--------------------------');
+        logger.verbose('Register Request Handler');
+        logger.verbose('--------------------------');
+        logger.verbose('Register request received');
+        console.log(req.body);
+        try {
+            // Create a new user and save it to the database
+            const new_user = await UserModel.createFromJSON({
+                email: req.body.email,
+                username: req.body.username,
+                password: req.body.password,
+                points: 0
+            });
+            logger.verbose('Inserting new user into database');
+            await UserModel.insert(new_user);
+            logger.verbose('New user inserted into database');
+
+            // Return a success message
+            return res.status(201).json({
+                message: 'user_created'
+            });
+
+        } catch (err: any) {
+
+            // Catching database-related errors
+            if (err instanceof SqlError) {
+                switch(err.code) {
+
+                    // Catching duplicate entry
+                    case 'ER_DUP_ENTRY':
+                        return res.status(409).json({
+                            reason: 'user_already_exists'
+                        });
+
+                    // Catching missing parameters
+                    case 'ER_PARAMETER_UNDEFINED':
+                        return res.status(400).json({
+                            reason: 'missing_parameters',
+                            missing_parameters: {
+                                email: req.body.email ? false : true,
+                                password: req.body.password ? false : true,
+                                username: req.body.username ? false : true
+                            }
+                        });
+
+                    // Catching generic error
+                    default:
+                        logger.error(err.code);
+                        return res.status(500).json({
+                            reason: 'internal_server_error'
+                        });
+                }
+
+            }
+            // Catching non database-related errors
+            return next(err);
+        }
+    }
+
+    public static async get_session_user(req: express.Request, res: express.Response, next: express.NextFunction) {
+        logger.verbose('Get session user request received');
+        return res.json({
+            email: req.user.email,
+            username: req.user.username,
+            points: req.user.points
+        });
+    }
+
+    public static async update_user(req: express.Request, res: express.Response, next: express.NextFunction) {
+        logger.verbose('User update request received');
+        passport.authenticate(
+            'login',
+            (err, user, info) => {
+                if (err) {
+                    logger.verbose('Login request encountered an error');
+                    return next(err);
+                }
+                
+                if (!user) {
+                    logger.verbose('Wrong credentials provided');
+                    return res.status(401).json({
+                        reason: info.message
+                    });
+                }
+
+                logger.verbose('User authenticated');
+                req.login(
+                    user,
+                    { session: false },
+                    async (err) => {
+
+                        if (err) {
+                            logger.verbose('Update request encountered an error');
+                            return next(err);
+                        }
+
+                        
+
+                        return res.json({ message: 'user_updated' });
+                    }
+                );
+            }
+        ) (req, res, next);
     }
 }
 

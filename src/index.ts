@@ -1,13 +1,14 @@
-// Loading environment variables
-import dotenv from "dotenv";
-dotenv.config({path: __dirname + "/../.env"});
+// Importing config files
+import config from "./config";
 
 // Importing vendor Libraries
 import express from 'express';
 import helmet from 'helmet';
-import session from "express-session";
 import passport from 'passport';
+
+// Importing local files
 import router from './router/router';
+import passport_setup from './libraries/passport';
 
 class App {
 
@@ -17,7 +18,6 @@ class App {
      * Server runner method
      */
     public static async run() {
-        
         // Initializing server
         this.app = express();
 
@@ -25,24 +25,21 @@ class App {
 
         // Express Middlewares
         this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: true }));
+
         this.app.use(helmet());
-        this.app.use(session({
-            secret: process.env.SESSION_SECRET || "secret",
-            resave: false,
-            saveUninitialized: false
-        }));
         this.app.use(passport.initialize());
-        this.app.use(passport.session());
+        
+        // Passport Setup
+        passport_setup();
 
         // Express Routes
         this.app.use(router);
         // Listening for connections
-        this.app.listen(process.env.SERVER_PORT, () => {
-            console.log(`Server is running on port ${process.env.SERVER_PORT}`);
+        this.app.listen(config.SERVER_PORT, () => {
+            console.log(`Server is running on port ${config.SERVER_PORT}`);
         });
     }
 }
-
-// Is this coorect?
 
 App.run();

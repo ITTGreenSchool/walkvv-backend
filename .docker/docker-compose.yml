@@ -1,9 +1,5 @@
 version: '3'
 
-volumes:
-  mariadb:
-    driver: local
-
 networks:
     db:
         driver: bridge
@@ -20,7 +16,7 @@ services:
     ports:
         - "3306:3306"
     volumes:
-     - mariadb:/var/lib/mysql
+     - ../db:/var/lib/mysql
     networks:
       db:
               

@@ -1,4 +1,4 @@
-type IFootpathRequest = {
+type FootpathRequest = {
     id: number;
     name: string;
     description: string;
@@ -9,4 +9,4 @@ type IFootpathRequest = {
     ending_totem: number;
 }
 
-export default IFootpathRequest;
+export default FootpathRequest;
