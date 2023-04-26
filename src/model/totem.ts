@@ -115,13 +115,26 @@ class TotemModel {
      * Registers the scan of a totem by a user in the database
      * @param totem The scanned totem id
      */
-    public static async scan_totem(totem: number, user_email: string) {
+    public static async scan_totem(totem_id: number, user_id: string) {
         let connection = await database.getInstance().getConnection();
 
-        // Check if the user has already scanned the totem
+        // Check if the user has already scanned the totem in the last 24 hours
         let result = await connection.query(
-            "SELECT * FROM scansione WHERE utente = ? AND totem = ? ORDER BY data DESC LIMIT 1",
-            [user_email, totem]
+            "SELECT * FROM scans WHERE user_id = ? AND totem_id = ? AND datetime > DATE_SUB(NOW(), INTERVAL 1 DAY)",
+            [user_id, totem_id]
+        );
+
+        // If the user scanned the totem in the last 24 hours, throw an error
+        if (result[0]) {
+            // The user has already scanned the totem in the last 24 hours
+            connection.release();
+            throw new Error("totem_scan_delay_error");
+        }
+
+        // The user hasn't scanned the totem in the last 24 hours, register the scan
+        await connection.query( 
+            "INSERT INTO scans (user_id, totem_id, datetime) VALUES (?, ?, NOW())",
+            [user_id, totem_id]
         );
 
     }

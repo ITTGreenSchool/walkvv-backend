@@ -10,6 +10,7 @@ import logger from '../libraries/logger';
 import { SqlError } from 'mariadb';
 import { log } from 'console';
 import { UserUpdateRequest } from '../types/user_request';
+import TotemModel from '../model/totem';
 
 class UserController {
 
@@ -253,15 +254,7 @@ class UserController {
         ) (req, res, next);
     }
 
-    /**
-     * This request handler is used to register the scannarization
-     * of a totem by the user that is currently logged in.
-     */
-    public static async scan_totem(req: express.Request, res: express.Response, next: express.NextFunction) {
-        logger.verbose('Scan totem request received');
-        
-        
-    }
+    
 }
 
 export default UserController;

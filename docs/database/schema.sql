@@ -1,13 +1,16 @@
+CREATE DATABASE IF NOT EXISTS walkvv;
+USE walkvv;
+
 -- Totems table:
 -- id: unique identifier
 -- points: number of points
 -- latitude: latitude of the totem
 -- longitude: longitude of the totem
 CREATE TABLE totems (
-    id INTEGER AUTO_INCREMENT NOT NULL,
-    points INTEGER NOT NULL,
-    latitude FLOAT NOT NULL,
-    longitude FLOAT NOT NULL,
+    id          INTEGER AUTO_INCREMENT  NOT NULL,
+    points      INTEGER                 NOT NULL,
+    latitude    FLOAT                   NOT NULL,
+    longitude   FLOAT                   NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -18,9 +21,9 @@ CREATE TABLE totems (
 -- points: number of points of the user
 
 CREATE TABLE users (
-    email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    username VARCHAR(255) NOT NULL,
+    email       VARCHAR(255)                    NOT NULL,
+    password    VARCHAR(255)                    NOT NULL,
+    username    VARCHAR(255)                    NOT NULL,
     PRIMARY KEY (email)
 );
 
@@ -34,13 +37,13 @@ CREATE TABLE users (
 -- ending_totem: id of the ending totem (foreign key)
 
 CREATE TABLE footpaths (
-    id INTEGER AUTO_INCREMENT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    description VARCHAR(255) NOT NULL,
-    length FLOAT NOT NULL,
-    difficulty VARCHAR(255) NOT NULL,
-    starting_totem INTEGER NOT NULL,
-    ending_totem INTEGER NOT NULL,
+    id              INTEGER         AUTO_INCREMENT  NOT NULL,
+    name            VARCHAR(255)                    NOT NULL,
+    description     VARCHAR(255)                    NOT NULL,
+    length          FLOAT                           NOT NULL,
+    difficulty      VARCHAR(255)                    NOT NULL,
+    starting_totem  INTEGER                         NOT NULL,
+    ending_totem    INTEGER                         NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (starting_totem) REFERENCES totems (id),
     FOREIGN KEY (ending_totem) REFERENCES totems (id)
@@ -52,12 +55,12 @@ CREATE TABLE footpaths (
 -- user_id: id of the user (foreign key)
 -- datetime: date and time of the scan
 CREATE TABLE scans (
-    scan_id INT NOT NULL AUTO_INCREMENT,
-	totem_id INT NOT NULL,
-    user_id INT NOT NULL,
-    datetime DATETIME NOT NULL,
-    FOREIGN KEY (totem_id) REFERENCES totems(id),
-    FOREIGN KEY (user_id) REFERENCES user(id),
+    scan_id         INT             AUTO_INCREMENT  NOT NULL ,
+	totem_id        INT                             NOT NULL,
+    user_id         VARCHAR(255)                    NOT NULL,
+    datetime        DATETIME                        NOT NULL,
     UNIQUE (totem_id, user_id),
-    PRIMARY KEY	(scan_id)
+    PRIMARY KEY	(scan_id),
+    FOREIGN KEY (totem_id) REFERENCES totems(id),
+    FOREIGN KEY (user_id) REFERENCES user(email)
 );
