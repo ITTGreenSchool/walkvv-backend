@@ -62,5 +62,5 @@ CREATE TABLE scans (
     UNIQUE (totem_id, user_id),
     PRIMARY KEY	(scan_id),
     FOREIGN KEY (totem_id) REFERENCES totems(id),
-    FOREIGN KEY (user_id) REFERENCES user(email)
+    FOREIGN KEY (user_id) REFERENCES users(email)
 );

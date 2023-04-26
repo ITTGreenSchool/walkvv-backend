@@ -137,6 +137,24 @@ class UserModel {
         connection.release();
     }
 
+    /************************************************
+     * Non CRUD actions
+     ************************************************/
+
+    /**
+     * Retrieves the points of a user
+     */
+    public static async selectPoints(user: UserModel): Promise<number> {
+        let connection = await database.getInstance().getConnection();
+        let result = await connection.query(
+            "SELECT SUM(points) AS points FROM scans INNER JOIN totems ON scans.totem_id = totems.id WHERE user_id = ?",
+            [user.getEmail()]
+        );
+        connection.release();
+        return result[0].points;
+    }
+
+
 }
 
 export default UserModel;

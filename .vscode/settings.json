@@ -5,5 +5,20 @@
   },
   "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "dotenv.enableAutocloaking": false
+  "dotenv.enableAutocloaking": false,
+  "sqltools.connections": [
+    {
+      "mysqlOptions": {
+        "authProtocol": "default"
+      },
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 3306,
+      "driver": "MariaDB",
+      "name": "LocalServer",
+      "database": "walkvv",
+      "username": "root",
+      "password": "root"
+    }
+  ]
 }

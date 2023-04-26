@@ -145,19 +145,22 @@ class UserController {
     /**
      * This request handler is used to get the user information
      * of the user that is currently logged in.
+     * @api GET /api/v1/auth/user Get session user
+     * @apiSuccess [200] {Object} User information
      */
     public static async get_session_user(req: express.Request, res: express.Response, next: express.NextFunction) {
         logger.verbose('Get session user request received');
         return res.json({
             email: req.user.email,
             username: req.user.username,
-            points: req.user.points
+            points: await UserModel.selectPoints(req.user)
         });
     }
 
     /**
      * This request handler is used to update the user information
      * of the user that is currently logged in.
+     * TODO: Add duplicate entry error handling
      */
     public static async update_user(req: express.Request, res: express.Response, next: express.NextFunction) {
         logger.verbose('User update request received');
@@ -199,7 +202,7 @@ class UserController {
 
                             return res.json({ message: 'user_updated' });
                         } catch (err) {
-
+                            next(err);
                         }
                     }
                 );
@@ -246,7 +249,7 @@ class UserController {
 
                             return res.json({ message: 'user_deleted' });
                         } catch (err) {
-
+                            next(err);
                         }
                     }
                 );

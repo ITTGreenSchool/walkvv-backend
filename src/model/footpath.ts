@@ -8,8 +8,7 @@ class FootpathModel {
     private difficulty: number;
     private length: number;
     private images: string[];
-    private starting_totem: TotemModel;
-    private ending_totem: TotemModel;
+    private totems: TotemModel[];
 
     constructor(id: number, name: string, description: string, difficulty: number, length: number, images: string[]) {
         this.id = id;

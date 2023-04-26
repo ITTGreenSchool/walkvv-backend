@@ -10,7 +10,7 @@ router.use('/api', api_router);
 router.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (err) {
         logger.error(err.message)
-        logger.error(err.stack)
+        logger.verbose('Error occured\n' + err.stack)
         res.status(500).json({
             error: 'internal_server_error'
         });
