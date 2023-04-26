@@ -3,7 +3,6 @@ export type UserRequest = {
     email: string;
     username: string;
     password: string;
-    points: number;
 }
 
 export type UserLoginRequest = {
@@ -15,7 +14,6 @@ export type UserRegisterRequest = {
     email: string;
     username: string;
     password: string;
-    points: number;
 }
 
 export type UserUpdateRequest = {
@@ -25,6 +23,5 @@ export type UserUpdateRequest = {
         email?: string;
         username?: string;
         password?: string;
-        points?: number;
     }
 }

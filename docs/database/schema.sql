@@ -21,7 +21,6 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     username VARCHAR(255) NOT NULL,
-    points INTEGER NOT NULL,
     PRIMARY KEY (email)
 );
 
@@ -45,4 +44,20 @@ CREATE TABLE footpaths (
     PRIMARY KEY (id),
     FOREIGN KEY (starting_totem) REFERENCES totems (id),
     FOREIGN KEY (ending_totem) REFERENCES totems (id)
+);
+
+-- Scans table:
+-- scan_id: unique identifier
+-- totem_id: id of the totem (foreign key)
+-- user_id: id of the user (foreign key)
+-- datetime: date and time of the scan
+CREATE TABLE scans (
+    scan_id INT NOT NULL AUTO_INCREMENT,
+	totem_id INT NOT NULL,
+    user_id INT NOT NULL,
+    datetime DATETIME NOT NULL,
+    FOREIGN KEY (totem_id) REFERENCES totems(id),
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    UNIQUE (totem_id, user_id),
+    PRIMARY KEY	(scan_id)
 );

@@ -106,6 +106,25 @@ class TotemModel {
         );
         connection.release();
     }
+
+    /******************************************
+     * Non CRUD actions
+     *****************************************/
+
+    /**
+     * Registers the scan of a totem by a user in the database
+     * @param totem The scanned totem id
+     */
+    public static async scan_totem(totem: number, user_email: string) {
+        let connection = await database.getInstance().getConnection();
+
+        // Check if the user has already scanned the totem
+        let result = await connection.query(
+            "SELECT * FROM scansione WHERE utente = ? AND totem = ? ORDER BY data DESC LIMIT 1",
+            [user_email, totem]
+        );
+
+    }
 }
 
 export default TotemModel;

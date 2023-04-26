@@ -7,7 +7,6 @@ class UserModel {
     private email: string;
     private username: string;
     private password: string;
-    private points: number;
 
 
     /******************************************
@@ -43,7 +42,6 @@ class UserModel {
         this.email = user.email;
         this.username = user.username;
         this.password = user.password;
-        this.points = user.points;
     }
 
     /******************************************
@@ -62,10 +60,6 @@ class UserModel {
         return this.password;
     }
 
-    public getPoints(): number {
-        return this.points;
-    }
-
     public setEmail(email: string): void {
         this.email = email;
     }
@@ -76,10 +70,6 @@ class UserModel {
 
     public async setPassword(password: string) {    
         this.password = await argon2.hash(password);
-    }
-
-    public setPoints(points: number): void {
-        this.points = points;
     }
 
     public async check_password(password: string) {
@@ -112,8 +102,8 @@ class UserModel {
     public static async insert(user: UserModel) {
         let connection = await database.getInstance().getConnection();
         await connection.query(
-            "INSERT INTO users (email, username, password, points) VALUES (?, ?, ?, ?)",
-            [user.getEmail(), user.getUsername(), user.getPassword(), user.getPoints()]
+            "INSERT INTO users (email, username, password) VALUES (?, ?, ?)",
+            [user.getEmail(), user.getUsername(), user.getPassword()]
         );
         connection.release();
     }
@@ -128,8 +118,8 @@ class UserModel {
     public static async update(user: UserModel) {
         let connection = await database.getInstance().getConnection();        
         await connection.query(
-            "UPDATE users SET username = ?, password = ?, points = ? WHERE email = ?",
-            [user.getUsername(), user.getPassword(), user.getPoints(), user.getEmail()]
+            "UPDATE users SET username = ?, password = ? WHERE email = ?",
+            [user.getUsername(), user.getPassword(), user.getEmail()]
         );
         connection.release();
     }
@@ -146,6 +136,7 @@ class UserModel {
         );
         connection.release();
     }
+
 }
 
 export default UserModel;

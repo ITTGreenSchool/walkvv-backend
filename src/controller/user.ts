@@ -75,24 +75,28 @@ class UserController {
 
     /**
      * This request handler is used to register a new user.
+     * If the user is registered successfully, a success message
+     * is returned.
      * 
      * @api POST /api/v1/auth/register User registration
      * @apiParam {String} [email] User email
      * @apiParam {String} [password] User password
+     * @apiSuccess [201] {String} [message] Success message
+     * @apiFailure [409] {String} [reason] Duplicate entry
+     * @apiFailure [400] {String} [reason] Missing parameters
+     * @apiFailure [400] {String} [reason] Other errors
      */
     public static async register(req: express.Request, res: express.Response, next: express.NextFunction) {
         logger.verbose('--------------------------');
         logger.verbose('Register Request Handler');
         logger.verbose('--------------------------');
         logger.verbose('Register request received');
-        console.log(req.body);
         try {
             // Create a new user and save it to the database
             const new_user = await UserModel.createFromJSON({
                 email: req.body.email,
                 username: req.body.username,
-                password: req.body.password,
-                points: 0
+                password: req.body.password
             });
             logger.verbose('Inserting new user into database');
             await UserModel.insert(new_user);
@@ -128,10 +132,7 @@ class UserController {
 
                     // Catching generic error
                     default:
-                        logger.error(err.code);
-                        return res.status(500).json({
-                            reason: 'internal_server_error'
-                        });
+                        next(err);
                 }
 
             }
@@ -140,6 +141,10 @@ class UserController {
         }
     }
 
+    /**
+     * This request handler is used to get the user information
+     * of the user that is currently logged in.
+     */
     public static async get_session_user(req: express.Request, res: express.Response, next: express.NextFunction) {
         logger.verbose('Get session user request received');
         return res.json({
@@ -149,6 +154,10 @@ class UserController {
         });
     }
 
+    /**
+     * This request handler is used to update the user information
+     * of the user that is currently logged in.
+     */
     public static async update_user(req: express.Request, res: express.Response, next: express.NextFunction) {
         logger.verbose('User update request received');
         passport.authenticate(
@@ -183,7 +192,6 @@ class UserController {
 
                             if (updated.email) user.setEmail(updated.email);
                             if (updated.password) await user.setPassword(updated.password);
-                            if (updated.points) user.setPoints(updated.points);
                             if (updated.username) user.setUsername(updated.username);
 
                             await UserModel.update(user);
@@ -198,6 +206,10 @@ class UserController {
         ) (req, res, next);
     }
 
+    /**
+     * This request handler is used to delete the user information
+     * of the user that is currently logged in.
+     */
     public static async delete_user(req: express.Request, res: express.Response, next: express.NextFunction) {
         logger.verbose('User delete request received');
         passport.authenticate(
@@ -239,6 +251,16 @@ class UserController {
                 );
             }
         ) (req, res, next);
+    }
+
+    /**
+     * This request handler is used to register the scannarization
+     * of a totem by the user that is currently logged in.
+     */
+    public static async scan_totem(req: express.Request, res: express.Response, next: express.NextFunction) {
+        logger.verbose('Scan totem request received');
+        
+        
     }
 }
 

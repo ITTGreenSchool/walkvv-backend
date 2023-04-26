@@ -55,7 +55,7 @@ export default function () {
     passport.use(
         new JWTStrategy(
             {
-                jwtFromRequest: ExtractJwt.fromHeader('token'),
+                jwtFromRequest: ExtractJwt.fromBodyField('token'),
                 secretOrKey: config.JWT_SECRET
             },
             async (token, done) => {
