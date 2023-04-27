@@ -1,4 +1,5 @@
 import database from "../libraries/database";
+import FootpathRequest from "../types/footpath_request";
 import TotemModel from "./totem";
 
 class FootpathModel {
@@ -10,13 +11,25 @@ class FootpathModel {
     private images: string[];
     private totems: TotemModel[];
 
-    constructor(id: number, name: string, description: string, difficulty: number, length: number, images: string[]) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.difficulty = difficulty;
-        this.length = length;
-        this.images = images;
+    /******************************************
+     * Constructors
+     ******************************************/
+
+    public static async createFromRequest(footpath: FootpathRequest): Promise<FootpathModel> {
+        return new FootpathModel(footpath);
+    }
+
+    public static async createFromDatabase(footpath: FootpathRequest) {
+        
+    }
+
+    constructor(footpath: FootpathRequest) {
+        this.id = footpath.id;
+        this.name = footpath.name;
+        this.description = footpath.description;
+        this.difficulty = footpath.difficulty;
+        this.length = footpath.length;
+        this.images = footpath.images;
     }
 
     /******************************************
