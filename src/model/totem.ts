@@ -1,4 +1,5 @@
 import database from "../libraries/database";
+import TotemRequest from "../types/totem_request";
 
 class TotemModel {
     private id: number;
@@ -6,12 +7,23 @@ class TotemModel {
     private latitude: number;
     private longitude: number;
 
+    /******************************************
+     * Constructors
+     ******************************************/
 
-    public constructor(id: number, points: number, latitude: number, longitude: number) {
-        this.id = id;
-        this.points = points;
-        this.latitude = latitude;
-        this.longitude = longitude;
+    public static async createFromRequest(totem: TotemRequest): Promise<TotemModel> {
+        return new TotemModel(totem);
+    }
+
+    public static async createFromDatabase(totem: TotemRequest) {
+        return new TotemModel(totem);
+    }
+
+    public constructor(totem: TotemRequest) {
+        this.id = totem.id;
+        this.points = totem.points;
+        this.latitude = totem.latitude;
+        this.longitude = totem.longitude;
     }
 
 
@@ -62,7 +74,7 @@ class TotemModel {
     public static async selectAll(): Promise<TotemModel[]> {
         let connection = await database.getInstance().getConnection();
         let result = await connection.query(
-            "SELECT * FROM totem"
+            "SELECT * FROM totems"
         );
         connection.release();
         return result;
@@ -75,7 +87,7 @@ class TotemModel {
     public static async insert(totem: TotemModel) {
         let connection = await database.getInstance().getConnection();
         await connection.query(
-            "INSERT INTO totem (codice, punteggio, latitudine, longitudine) VALUES (?, ?, ?, ?)",
+            "INSERT INTO totems (codice, punteggio, latitudine, longitudine) VALUES (?, ?, ?, ?)",
             [totem.getId(), totem.getPoints(), totem.getLatitude(), totem.getLongitude()]
         );
         connection.release();
@@ -88,7 +100,7 @@ class TotemModel {
     public static async update(totem: TotemModel) {
         let connection = await database.getInstance().getConnection();
         await connection.query(
-            "UPDATE totem SET punteggio = ? WHERE codice = ?",
+            "UPDATE totems SET punteggio = ? WHERE codice = ?",
             [totem.getPoints(), totem.getId()]
         );
         connection.release();
@@ -101,7 +113,7 @@ class TotemModel {
     public static async delete(totem: TotemModel) {
         let connection = await database.getInstance().getConnection();
         await connection.query(
-            "DELETE FROM totem WHERE codice = ?",
+            "DELETE FROM totems WHERE codice = ?",
             [totem.getId()]
         );
         connection.release();

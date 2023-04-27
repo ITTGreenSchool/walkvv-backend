@@ -20,7 +20,7 @@ class FootpathModel {
     }
 
     public static async createFromDatabase(footpath: FootpathRequest) {
-        
+        return new FootpathModel(footpath);
     }
 
     constructor(footpath: FootpathRequest) {

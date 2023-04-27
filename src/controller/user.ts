@@ -148,7 +148,7 @@ class UserController {
      * @api GET /api/v1/auth/user Get session user
      * @apiSuccess [200] {Object} User information
      */
-    public static async get_session_user(req: express.Request, res: express.Response, next: express.NextFunction) {
+    public static async get_user(req: express.Request, res: express.Response, next: express.NextFunction) {
         logger.verbose('Get session user request received');
         return res.json({
             email: req.user.email,
@@ -160,6 +160,11 @@ class UserController {
     /**
      * This request handler is used to update the user information
      * of the user that is currently logged in.
+     * @api PUT /api/v1/auth/user Update session user
+     * @apiParam {String} [email] User email
+     * @apiParam {String} [password] User password
+     * @apiParam {String} [updated_fields.username] User username
+     * @apiSuccess [200] {Object} 
      * TODO: Add duplicate entry error handling
      */
     public static async update_user(req: express.Request, res: express.Response, next: express.NextFunction) {

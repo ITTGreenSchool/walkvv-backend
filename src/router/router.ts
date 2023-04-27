@@ -1,6 +1,6 @@
 import express from 'express';
 import logger from '../libraries/logger';
-import api_router from './apis/apis';
+import api_router from './apis/router';
 
 const router = express.Router();
 

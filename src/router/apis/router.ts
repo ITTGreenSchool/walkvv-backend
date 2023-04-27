@@ -1,7 +1,7 @@
 import express from 'express';
 import authenticate_jwt from '../../middlewares/authenticate_jwt';
 
-import api_v1_router from './v1';
+import api_v1_router from './v1/router';
 import api_auth_router from './auth';
 
 const api_router = express.Router();

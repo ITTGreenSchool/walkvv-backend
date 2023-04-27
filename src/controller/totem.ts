@@ -1,8 +1,81 @@
 import express from 'express';
 import logger from '../libraries/logger';
 import TotemModel from '../model/totem';
+import TotemRequest from '../types/totem_request';
 
 class TotemController {
+
+    /**
+     * This request handler is used to get the totems that are
+     * currently registered in the database.
+     * @api GET /totems
+     * @apiSuccess [200] {Object[]} [totems] The totems that are currently registered in the database
+     */
+    public static async get_totems(req: express.Request, res: express.Response, next: express.NextFunction) {
+        logger.verbose('Get totems request received');
+        try {
+            // Attempting to get the totems
+            const totems = await TotemModel.selectAll();
+            res.status(200).json({
+                totems: totems
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    /**
+     * This request handler is used to create a new totem in the database.
+     * @api POST /totems
+     * @apiParam {number} [points] The number of points that the totem is worth
+     * @apiParam {number} [latitute] The latitude of the totem
+     * @apiParam {number} [longitude] The longitude of the totem
+     * @apiSuccess [201] {string} [message] Success Message
+     */
+    public static async create_totem(req: express.Request, res: express.Response, next: express.NextFunction) {
+        logger.verbose('Create totem request received');
+        try {
+            let totem = new TotemModel(req.body);
+            // Attempting to create the totem
+            await TotemModel.insert(totem);
+            res.status(201).json({
+                message: 'totem_created'
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    /**
+     * This request handler is used to update a totem in the database.
+     * @api POST /totems
+     * @apiParam {number} [id] The id of the totem to update
+     * @apiParam {Object} [updated_data] The updated data of the totem
+     * @apiSuccess [201] {string} [message] Success Message
+     */
+    public static async update_totem(req: express.Request, res: express.Response, next: express.NextFunction) {
+        logger.verbose('Update totem request received');
+        try {
+            let body = req.body as TotemRequest;
+            let totem = new TotemModel(req.body.id);
+            
+            // Attempting to update the totem
+            await TotemModel.update(totem);
+            res.status(200).json({
+                message: 'totem_updated'
+            });
+        }
+    }
+
+    /**
+     * This request handler is used to delete a totem in the database.
+     * @api POST /totems
+     * @apiParam {number} [id] The id of the totem to delete
+     * @apiSuccess [201] {string} [message] Success Message
+     */
+    public static async delete_totem(req: express.Request, res: express.Response, next: express.NextFunction) {
+
+    }
     
     /**
      * This request handler is used to register the scannarization
