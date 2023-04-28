@@ -32,6 +32,8 @@ class Database {
             password: config.DB_PASSWORD,
             database: config.DB_NAME,
         });
+
+        
     }
     
     // Singleton pattern
@@ -45,6 +47,21 @@ class Database {
     // Get a connection
     public async getConnection(): Promise<mariadb.PoolConnection> {
         return await this.pool.getConnection();
+    }
+
+    public static async checkConnection(): Promise<void> {
+
+        await Database.getInstance().getConnection()
+        .then((connection) => {
+            logger.verbose(`Checking database connection`);
+            logger.info(`Database connection successful`);
+            connection.release();
+        })
+        .catch((error) => {
+            logger.verbose(`Checking database connection`);
+            logger.error(`Database connection failed`);
+            process.exit(1);
+        });
     }
 }
 

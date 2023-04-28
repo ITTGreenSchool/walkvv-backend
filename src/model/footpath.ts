@@ -9,7 +9,6 @@ class FootpathModel {
     private difficulty: number;
     private length: number;
     private images: string[];
-    private totems: TotemModel[];
 
     /******************************************
      * Constructors
