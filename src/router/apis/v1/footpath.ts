@@ -3,7 +3,7 @@ import FootpathController from '../../../controller/footpath';
 
 const api_v1_footpath_router = express.Router();
 
-api_v1_footpath_router.get('/', FootpathController.get_footpath);
+api_v1_footpath_router.get('/:id', FootpathController.get_footpath);
 
 api_v1_footpath_router.post('/', FootpathController.create_footpath);
 
