@@ -27,8 +27,11 @@ export default function () {
                 // Checking if user exists and password is correct
                 logger.verbose(`Checking if user ${email} exists and password is correct`);
                 let user = await UserModel.selectByEmail(email);
-                if (!user || !(await user.check_password(password))) {
-                    return done(null, false, { message: 'bad_credentials' });
+                if (!user) {
+                    return done(null, false, { message: 'bad_user' });
+                }
+                if (!(await user.check_password(password))) {
+                    return done(null, false, { message: 'bad_password' });
                 }
                 logger.verbose(`User ${email} exists and password is correct`);
 
