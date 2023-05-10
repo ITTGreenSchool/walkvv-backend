@@ -1,7 +1,7 @@
 import express from 'express';
 import logger from '../libraries/logger';
 import TotemModel from '../model/totem';
-import TotemRequest from '../types/totem_request';
+import { TotemRequest, TotemUpdateRequest } from '../types/totem_request';
 
 class TotemController {
 
@@ -36,6 +36,7 @@ class TotemController {
         logger.verbose('Create totem request received');
         try {
             let totem = new TotemModel(req.body);
+            
             // Attempting to create the totem
             await TotemModel.insert(totem);
             res.status(201).json({
@@ -56,14 +57,21 @@ class TotemController {
     public static async update_totem(req: express.Request, res: express.Response, next: express.NextFunction) {
         logger.verbose('Update totem request received');
         try {
-            let body = req.body as TotemRequest;
-            let totem = new TotemModel(req.body.id);
+            let data = req.body as TotemUpdateRequest;
+            let updated = data.updated_data;
+            let totem = await TotemModel.selectById(data.id);
+
+            if (updated.points) totem.setPoints(updated.points);
+            if (updated.latitude) totem.setLatitude(updated.latitude);
+            if (updated.longitude) totem.setLongitude(updated.longitude);
             
             // Attempting to update the totem
             await TotemModel.update(totem);
             res.status(200).json({
                 message: 'totem_updated'
             });
+        } catch (err) {
+            next(err);
         }
     }
 
@@ -74,7 +82,16 @@ class TotemController {
      * @apiSuccess [201] {string} [message] Success Message
      */
     public static async delete_totem(req: express.Request, res: express.Response, next: express.NextFunction) {
-
+        logger.verbose('Delete totem request received');
+        try {
+            // Attempting to delete the totem
+            await TotemModel.delete(req.body.id);
+            res.status(200).json({
+                message: 'totem_deleted'
+            });
+        } catch (err) {
+            next(err);
+        }
     }
     
     /**

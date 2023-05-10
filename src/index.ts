@@ -9,6 +9,8 @@ import passport from 'passport';
 // Importing local files
 import router from './router/router';
 import passport_setup from './libraries/passport';
+import Database from './libraries/database';
+import logger from "./libraries/logger";
 
 class App {
 
@@ -20,6 +22,7 @@ class App {
     public static async run() {
         // Initializing server
         this.app = express();
+        await Database.checkConnection();
 
         // Express Settings
 
@@ -37,7 +40,7 @@ class App {
         this.app.use(router);
         // Listening for connections
         this.app.listen(config.SERVER_PORT, () => {
-            console.log(`Server is running on port ${config.SERVER_PORT}`);
+            logger.info(`Server is running on port ${config.SERVER_PORT}`);
         });
     }
 }

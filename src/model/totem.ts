@@ -1,5 +1,5 @@
 import database from "../libraries/database";
-import TotemRequest from "../types/totem_request";
+import {TotemRequest} from "../types/totem_request";
 
 class TotemModel {
     private id: number;
@@ -81,14 +81,29 @@ class TotemModel {
     }
 
     /**
+     * Retrieves a totem from the database by its id
+     * @param id The id of the totem to retrieve
+     * @returns A TotemModel object
+     */
+    public static async selectById(id: number): Promise<TotemModel> {
+        let connection = await database.getInstance().getConnection();
+        let result = await connection.query(
+            "SELECT * FROM totems WHERE id = ?",
+            [id]
+        );
+        connection.release();
+        return result[0];
+    }
+
+    /**
      * Inserts a totem into the database
      * @param totem The user to insert into the database
      */
     public static async insert(totem: TotemModel) {
         let connection = await database.getInstance().getConnection();
         await connection.query(
-            "INSERT INTO totems (codice, punteggio, latitudine, longitudine) VALUES (?, ?, ?, ?)",
-            [totem.getId(), totem.getPoints(), totem.getLatitude(), totem.getLongitude()]
+            "INSERT INTO totems (points, latitude, longitude) VALUES (?, ?, ?)",
+            [totem.getPoints(), totem.getLatitude(), totem.getLongitude()]
         );
         connection.release();
     }
@@ -100,7 +115,7 @@ class TotemModel {
     public static async update(totem: TotemModel) {
         let connection = await database.getInstance().getConnection();
         await connection.query(
-            "UPDATE totems SET punteggio = ? WHERE codice = ?",
+            "UPDATE totems SET points = ? WHERE id = ?",
             [totem.getPoints(), totem.getId()]
         );
         connection.release();

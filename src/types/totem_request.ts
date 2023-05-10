@@ -5,4 +5,13 @@ type TotemRequest = {
     longitude: number;
 }
 
-export default TotemRequest;
+type TotemUpdateRequest = {
+    id: number;
+    updated_data: {
+        points?: number;
+        latitude?: number;
+        longitude?: number;
+    };
+}
+
+export { TotemRequest, TotemUpdateRequest };

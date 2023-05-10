@@ -94,11 +94,7 @@ class UserController {
         logger.verbose('Register request received');
         try {
             // Create a new user and save it to the database
-            const new_user = await UserModel.createFromJSON({
-                email: req.body.email,
-                username: req.body.username,
-                password: req.body.password
-            });
+            const new_user = await UserModel.createFromJSON(req.body);
             logger.verbose('Inserting new user into database');
             await UserModel.insert(new_user);
             logger.verbose('New user inserted into database');
